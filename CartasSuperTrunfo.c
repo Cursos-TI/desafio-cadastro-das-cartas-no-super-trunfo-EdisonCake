@@ -1,11 +1,12 @@
 #include <stdio.h>
 
-// Desenvolvido por Edison Antonio - 30/07/2025
-
+#define TAM 50
 #define NUM_CARTAS 2
 
 typedef struct {
-    char codigo[10];
+    char estado[TAM];
+    char nomeCidade[TAM];
+    char codigo[4];
     unsigned long int populacao;
     float area;
     float pib;
@@ -15,79 +16,79 @@ typedef struct {
     float superPoder;
 } Carta;
 
-// Função para cadastrar uma carta
 void cadastrarCarta(Carta *carta) {
-    printf("\nDigite o código da cidade (ex: A01): ");
+    printf("\n--- Cadastro da Carta ---\n");
+
+    printf("Estado: ");
+    scanf(" %[^\n]", carta->estado);
+
+    printf("Nome da cidade: ");
+    scanf(" %[^\n]", carta->nomeCidade);
+
+    printf("Código da carta (ex: A01): ");
     scanf(" %s", carta->codigo);
-    printf("População: ");
+
+    printf("População (em habitantes): ");
     scanf("%lu", &carta->populacao);
-    printf("Área (km²): ");
+
+    printf("Área (em km²): ");
     scanf("%f", &carta->area);
+
     printf("PIB (em bilhões): ");
     scanf("%f", &carta->pib);
+
     printf("Número de pontos turísticos: ");
     scanf("%d", &carta->pontosTuristicos);
 
-    // Cálculo dos atributos derivados
-    carta->densidade = carta->populacao / carta->area;
-    carta->pibPerCapita = carta->pib / carta->populacao;
-    carta->superPoder = carta->pontosTuristicos + carta->pib + carta->pibPerCapita + (1 / carta->densidade);
+    // Cálculos automáticos
+    carta->densidade = carta->area != 0 ? carta->populacao / carta->area : 0;
+    carta->pibPerCapita = carta->populacao != 0 ? (carta->pib * 1000000000.0) / carta->populacao : 0;
+    carta->superPoder = (float)carta->populacao + carta->area + carta->pib +
+                        carta->pontosTuristicos + carta->pibPerCapita +
+                        (carta->densidade != 0 ? (1.0 / carta->densidade) : 0);
 }
 
-// Exibir dados de uma carta
-void exibirCarta(Carta c) {
-    printf("\n---- Carta %s ----\n", c.codigo);
-    printf("População: %lu\n", c.populacao);
-    printf("Área: %.2f km²\n", c.area);
-    printf("PIB: R$ %.2f bilhões\n", c.pib);
-    printf("Pontos Turísticos: %d\n", c.pontosTuristicos);
-    printf("Densidade Populacional: %.2f hab/km²\n", c.densidade);
-    printf("PIB per Capita: R$ %.2f\n", c.pibPerCapita);
-    printf("Super Poder: %.2f\n", c.superPoder);
+void exibirCarta(Carta carta) {
+    printf("\n--- Exibindo Carta %s ---\n", carta.codigo);
+    printf("Estado: %s\n", carta.estado);
+    printf("Cidade: %s\n", carta.nomeCidade);
+    printf("População: %lu\n", carta.populacao);
+    printf("Área: %.2f km²\n", carta.area);
+    printf("PIB: R$ %.2f bilhões\n", carta.pib);
+    printf("Pontos Turísticos: %d\n", carta.pontosTuristicos);
+    printf("Densidade Populacional: %.2f hab/km²\n", carta.densidade);
+    printf("PIB per Capita: R$ %.2f\n", carta.pibPerCapita);
+    printf("Super Poder: %.2f\n", carta.superPoder);
 }
 
-// Comparar dois valores float (ou long)
 int compararFloat(float a, float b, int menorVence) {
-    return menorVence ? (a < b ? 1 : 0) : (a > b ? 1 : 0);
+    return menorVence ? (a < b) : (a > b);
 }
 
-// Comparar dois valores int/long
-int compararLong(unsigned long a, unsigned long b) {
-    return a > b ? 1 : 0;
+int compararLong(unsigned long int a, unsigned long int b) {
+    return a > b;
 }
 
-// Comparar e mostrar resultados
 void compararCartas(Carta c1, Carta c2) {
-    printf("\n==== Comparação ====\n");
-
-    printf("\nPopulação: Carta %d vence", compararLong(c1.populacao, c2.populacao) + 1);
-    printf("\nÁrea: Carta %d vence", compararFloat(c1.area, c2.area, 0) + 1);
-    printf("\nPIB: Carta %d vence", compararFloat(c1.pib, c2.pib, 0) + 1);
-    printf("\nPontos Turísticos: Carta %d vence", compararLong(c1.pontosTuristicos, c2.pontosTuristicos) + 1);
-    printf("\nDensidade Populacional: Carta %d vence", compararFloat(c1.densidade, c2.densidade, 1) + 1);
-    printf("\nPIB per Capita: Carta %d vence", compararFloat(c1.pibPerCapita, c2.pibPerCapita, 0) + 1);
-    printf("\nSuper Poder: Carta %d vence", compararFloat(c1.superPoder, c2.superPoder, 0) + 1);
-
-    printf("\n");
+    printf("\n--- Comparação Entre Cartas ---\n");
+    printf("População: %d\n", compararLong(c1.populacao, c2.populacao));
+    printf("Área: %d\n", compararFloat(c1.area, c2.area, 0));
+    printf("PIB: %d\n", compararFloat(c1.pib, c2.pib, 0));
+    printf("Pontos Turísticos: %d\n", compararLong(c1.pontosTuristicos, c2.pontosTuristicos));
+    printf("Densidade Populacional: %d\n", compararFloat(c1.densidade, c2.densidade, 1));
+    printf("PIB per Capita: %d\n", compararFloat(c1.pibPerCapita, c2.pibPerCapita, 0));
+    printf("Super Poder: %d\n", compararFloat(c1.superPoder, c2.superPoder, 0));
 }
 
 int main() {
     Carta cartas[NUM_CARTAS];
 
-    printf("=== SUPER TRUNFO - PAÍSES ===\n");
+    cadastrarCarta(&cartas[0]);
+    cadastrarCarta(&cartas[1]);
 
-    // Cadastro
-    for (int i = 0; i < NUM_CARTAS; i++) {
-        printf("\nCadastro da Carta %d:\n", i + 1);
-        cadastrarCarta(&cartas[i]);
-    }
+    exibirCarta(cartas[0]);
+    exibirCarta(cartas[1]);
 
-    // Exibição
-    for (int i = 0; i < NUM_CARTAS; i++) {
-        exibirCarta(cartas[i]);
-    }
-
-    // Comparação
     compararCartas(cartas[0], cartas[1]);
 
     return 0;
